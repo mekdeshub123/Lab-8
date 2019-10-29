@@ -14,3 +14,10 @@
     max-height: 500px;
     overflow: scroll;
 }
+.present-true{
+    color: blue;
+    font-style: bold;
+}
+.present-false{
+    color: gray;
+}
