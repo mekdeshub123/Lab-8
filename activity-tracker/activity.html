@@ -13,48 +13,64 @@
 <body>
     <div id="app">
 
-        <h1 class="text-center">{{ activity }}! Time Tracker</h1>
+        <!-- TODO change header text to include name of activity -->
+        <h1 class="text-center">{{activity}}! Time Tracker</h1>
 
         <div id="add-hours" class="card">
 
             <h2 class="card-header">Add Hours</h2>
             <div class="card-body">
+                
 
                 <form>
 
+                    <!-- TODO show error alert with list of errors,
+                         if there are errors in the form -->
                     <div class="alert alert-danger" v-show="errors && errors.length > 0">
                         <li v-for="error in errors">{{ error }}</li>
                     </div>
+                    
 
                     <div class="form-group">
+                        <!-- TODO change label message to include name of activity -->
                         <label class="form-label" for="when">When did you {{ activity | lowercase }}?</label>
+
                         <input id="when" class="form-control" type="date" v-model.lazy="when">
                     </div>
 
+                        <!--TODO v-model to app data property-->
+
                     <div class="form-group">
-                        <label class="form-label" for="howLong">How long did you practice for?</label>
+                        <label class="form-label" for="howLong">How long did you practice for, in hours?</label>
+                        <!-- TODO v-model to app data property -->
+
                         <input id="howLong" class="form-control" v-model.number.lazy="howLong">
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="type">What type?</label>
+                        <!-- TODO create a select. v-model type -->
+                        <!-- TODO create one option for each type  -->
                         <select class="form-control" v-model="type">
                             <option v-for="type in types" v-bind:value="type">{{ type }}</option>
                         </select>
                     </div>
-
+                    
                     <div class="form-check-inline">
+
                         <input id="v2" class="form-check-input" type="radio" v-bind:value="traditional" v-model="digitalTraditional">
-                        <label class="form-check-label" for="v1">Traditional</label>
+                        <label class="form-check-label" for="v2">Traditional</label>
                     </div>
 
                     <div class="form-check-inline">
                         <input id="v1" class="form-check-input" type="radio" v-bind:value="digital" v-model="digitalTraditional">
                         <label class="form-check-label" for="v1">Digital</label>
+                    
+                        <!-- TODO v-model, v-bind value -->                      
                     </div>
-
                     <div>
-                        <button class="btn btn-primary mt-2" type="button" v-on:click="submit">Add record</button>
+                        <!-- TODO v-on click event -->
+                        <button class="btn btn-primary mt-2" type="button" v-on:click="submit" >Add record</button>
                     </div>
 
                 </form>
@@ -65,7 +81,8 @@
             <h2 class="card-header">Activity Record</h2>
 
             <div class="card-body">
-                <h3>{{ activityRecords.length }} records</h3>
+                <!-- TODO display the number of records  -->
+                <h3> {{ activityRecords.length }} record(s)</h3>
 
                 <div id="records">
                     <table class="table">
@@ -78,9 +95,10 @@
                         <tr v-for="record in activityRecords">
                             <td>{{ record.when | shortDateFormat }}</td>
                             <td>{{ record.howLong }}</td>
-                            <td>{{ record.type }}</td>
+                            <td>{{ record.type }}</td> <!-- total for each type  -->
                             <td>{{ record.digitalTraditional }}</td>
                         </tr>
+                        <!-- TODO display one table row for each activityRecord  -->
                     </table>
                 </div>
             </div>
@@ -91,35 +109,50 @@
             <h2 class="card-header">Summary</h2>
 
             <div class="card-body">
+
                 <!-- Computed property -->
-                <p>You have practiced a total of {{ totalHours }} hours, broken down as follows:</p>
+
+                <!-- TODO use computed property to display total hours -->
+                <p>You have practiced a total of {{totalHours}} hours, broken down as follows:</p>
                 
-                <!-- total for each type  -->
+                <!-- TODO computed property to display total for each type 
+                isplayed in a list -->
+
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item" v-for="hours, type in totalHoursByType">{{ type }}: {{ hours }}</li>
+                    <li class="list-group-item" v-for="hours, type in totalHoursByType">{{ type }}: {{ hours}}</li>
                 </ul>
+                <p>TODO total for each type</p>
+                
             </div>
         </div>
 
     </div>
 
     <script>
-
+      // TODO create vue app here
         let app = new Vue({
             el: "#app",
             data: {
+
                 activity: 'Practice Art',  // If you like, replace in your own activity name e.g. studying, running, playing video games.... 
+
+                activity: 'practice Art',
+
                 when: '',
                 howLong: 1,
                 type: 'sketching',
-                digitalTraditional: 'traditional',   // you may wish to rename this 
+                digitalTraditional: 'traditional',
                 activityRecords: [],
+
                 types: ['sketching', 'drawing', 'painting'],    // replace with appropriate options for your activity e.g. for video game, ['PC', 'PlayStation', 'Xbox' ]
                 digital: 'digital',          // on a computer, tablet                // replace with appropriate options for your activity e.g. for video games, single player and multi player 
                 traditional: 'traditional',   // painting, drawing etc. on paper
                 errors: []
+
             },
+            
             methods: {
+
                 submit() {     
                     this.errors = []
 
@@ -138,6 +171,33 @@
                     }
                 }
             }, computed: {
+
+                submit() {
+                    this.errors = []
+                    if (this.whenLocal == 'Invalid Date' || this.whenLocal.getTime() > new Date().getTime()) {
+                        this.errors.push('Select a valid date, today or in the past')
+                    }
+                    if (typeof (this.howLong) != "number" || this.howLong <= 0) {
+                        this.errors.push('The number of hours must be a number greater than zero.')
+                    }
+                    if (this.errors.length == 0) {
+                        let record = {
+                            when: this.whenLocal,
+                            howLong: this.howLong,
+                            type: this.type,
+                            digitalTraditional: this.digitalTraditional
+                        }
+                        this.activityRecords.push(record)
+                        this.activityRecords.sort(function (r1, r2) {
+                            return r1.when.getTime() - r2.when.getTime()
+                        })
+                    }
+                    
+                }
+            },
+            
+            computed: {
+
                 whenLocal() {
                     let date = new Date(this.when)
                     let timestamp = date.getTime() + (date.getTimezoneOffset() * 60 * 1000)
@@ -151,28 +211,31 @@
                             return hoursAccumulator + currentRecord.howLong
                         }, 0)
                     }
-                    return total
-                },
+                    return total                
+                },               
                 totalHoursByType() {
                     let hoursByType = {}
-                    let self = this
-                    this.types.forEach(function (type) {
-                        let totalForType = self.activityRecords
-                            .filter(function (record) { return record.type === type })
-                            .reduce(function (accumulator, current) { return accumulator + current.howLong }, 0)
+                    this.types.forEach(type => {
+                        let totalForType = this.activityRecords
+                            .filter(function (record) {return record.type === type})
+                            .reduce(function (accumulator, current) { return accumulator + current.howLong}, 0)
                         hoursByType[type] = totalForType
+
                     })
                     return hoursByType
                 }
-            }, filters: {
-                lowercase(string) {
-                    return string.toLowerCase()
+            },           
+
+            filters: {
+                lowercase(text) {
+                    return text.toLowerCase()
                 },
                 shortDateFormat(date) {
                     return new Intl.DateTimeFormat().format(date)
                 }
             }
         })
+
 
     </script>
 
