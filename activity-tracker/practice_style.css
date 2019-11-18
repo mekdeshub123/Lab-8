@@ -2,4 +2,17 @@
     max-height: 250px;
     overflow: scroll;
 }
+.list-group-item{
+    list-style: armenian;
+    background-color: rgb(214, 214, 236);
+}
+#each-total{
+    color: brown;
+}
+.card-header{
+    background-color: rgb(117, 117, 190); 
+}
+body{
+    padding: 100px;
+}
 
